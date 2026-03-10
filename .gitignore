@@ -1,0 +1,23 @@
+# executables
+*.exe
+*.exe~
+
+# local runtime storage
+data/
+
+# generated test/demo files
+bigfile.bin
+downloaded-bigfile*.bin
+sample.txt
+
+# logs
+*.log
+
+# editor files
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db
+.DS_Store
+

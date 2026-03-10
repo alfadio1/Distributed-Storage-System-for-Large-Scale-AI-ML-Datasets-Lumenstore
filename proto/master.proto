@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package lumenstore.master.v1;
+option go_package = "github.com/alpha/lumenstore/gen/master/v1;masterv1";
+
+message Empty {}
+
+message RegisterNodeRequest {
+  string node_id = 1;
+  string address = 2; // host:port for gRPC
+}
+
+message RegisterNodeResponse {
+  bool ok = 1;
+}
+
+message HeartbeatRequest {
+  string node_id = 1;
+}
+
+message HeartbeatResponse {
+  bool ok = 1;
+}
+
+// --- Object metadata planning / retrieval ---
+
+message PutObjectInitRequest {
+  string object_key = 1;
+  uint64 size_bytes = 2;
+  uint64 chunk_size_bytes = 3;
+  uint32 replication_factor = 4;
+}
+
+message GetObjectPlanRequest {
+  string object_key = 1;
+}
+
+message ChunkPlacement {
+  string chunk_id = 1;
+  uint32 index = 2;
+  string primary_node = 3;
+  repeated string replica_nodes = 4;
+
+  // concrete addresses for client upload/download
+  string primary_address = 5;
+  repeated string replica_addresses = 6;
+}
+
+message PutObjectInitResponse {
+  string object_key = 1;
+  uint64 size_bytes = 2;
+  uint64 chunk_size_bytes = 3;
+  uint32 replication_factor = 4;
+  uint32 num_chunks = 5;
+  repeated ChunkPlacement chunks = 6;
+}
+
+message GetObjectPlanResponse {
+  string object_key = 1;
+  uint64 size_bytes = 2;
+  uint64 chunk_size_bytes = 3;
+  uint32 replication_factor = 4;
+  uint32 num_chunks = 5;
+  repeated ChunkPlacement chunks = 6;
+}
+
+// --- Debug state inspection ---
+
+message DebugObject {
+  string object_key = 1;
+  uint64 size_bytes = 2;
+  uint64 chunk_size_bytes = 3;
+  uint32 replication_factor = 4;
+  uint32 num_chunks = 5;
+  repeated ChunkPlacement chunks = 6;
+}
+
+message DebugStateResponse {
+  repeated string registered_nodes = 1;
+  repeated DebugObject objects = 2;
+}
+
+service MasterService {
+  rpc RegisterNode(RegisterNodeRequest) returns (RegisterNodeResponse);
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+
+  rpc PutObjectInit(PutObjectInitRequest) returns (PutObjectInitResponse);
+  rpc GetObjectPlan(GetObjectPlanRequest) returns (GetObjectPlanResponse);
+
+  rpc DebugState(Empty) returns (DebugStateResponse);
+}

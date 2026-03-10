@@ -1,0 +1,43 @@
+services:
+  master:
+    build:
+      context: ..
+      dockerfile: docker/master.Dockerfile
+    ports:
+      - "50051:50051"
+
+  node1:
+    build:
+      context: ..
+      dockerfile: docker/node.Dockerfile
+    environment:
+      NODE_ID: "node1"
+      MASTER_ADDR: "master:50051"
+      LISTEN_ADDR: ":6001"
+      SELF_ADDR: "node1:6001"
+    depends_on:
+      - master
+
+  node2:
+    build:
+      context: ..
+      dockerfile: docker/node.Dockerfile
+    environment:
+      NODE_ID: "node2"
+      MASTER_ADDR: "master:50051"
+      LISTEN_ADDR: ":6001"
+      SELF_ADDR: "node2:6001"
+    depends_on:
+      - master
+
+  node3:
+    build:
+      context: ..
+      dockerfile: docker/node.Dockerfile
+    environment:
+      NODE_ID: "node3"
+      MASTER_ADDR: "master:50051"
+      LISTEN_ADDR: ":6001"
+      SELF_ADDR: "node3:6001"
+    depends_on:
+      - master

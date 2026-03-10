@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package lumenstore.node.v1;
+option go_package = "github.com/alpha/lumenstore/gen/node/v1;nodev1";
+
+message HealthRequest {}
+
+message HealthResponse {
+  string node_id = 1;
+  string status = 2; // "ok"
+}
+
+// --- Chunk IO ---
+
+message PutChunkRequest {
+  string chunk_id = 1;
+  bytes data = 2;
+  uint32 crc32 = 3; // checksum of data
+}
+
+message PutChunkResponse {
+  bool ok = 1;
+  uint64 bytes_written = 2;
+}
+
+message GetChunkRequest {
+  string chunk_id = 1;
+}
+
+message GetChunkResponse {
+  bytes data = 1;
+  uint32 crc32 = 2;
+  uint64 bytes_read = 3;
+}
+
+service NodeService {
+  rpc Health(HealthRequest) returns (HealthResponse);
+
+  // 
+  rpc PutChunk(PutChunkRequest) returns (PutChunkResponse);
+  rpc GetChunk(GetChunkRequest) returns (GetChunkResponse);
+}
