@@ -37,11 +37,11 @@ LumenStore follows a control plane / data plane separation:
 ```
 Client
    │
-   ▼
+   v
 Metadata Service
    │
 ┌──┼───────────┐
-▼  ▼           ▼
+v  v           v
 Node1 Node2   Node3
 ```
 
@@ -170,9 +170,9 @@ Chunks can be replicated across multiple nodes.
 Example replication factor = 2:
 
 ```
-chunk0 → node1, node2
-chunk1 → node2, node3
-chunk2 → node3, node1
+chunk0 -> node1, node2
+chunk1 -> node2, node3
+chunk2 -> node3, node1
 ```
 
 
@@ -202,9 +202,9 @@ After commit, the object is available for reads.
 Storage nodes send periodic heartbeats:
 
 ```
-node1 → heartbeat → master
-node2 → heartbeat → master
-node3 → heartbeat → master
+node1 -> heartbeat -> master
+node2 -> heartbeat -> master
+node3 -> heartbeat -> master
 ```
 
 If a node stops responding, it is marked unavailable.
@@ -219,20 +219,20 @@ Example:
 
 ```
 node2 fails
-chunk1 → node1, node2
+chunk1 -> node1, node2
 ```
 
 Healing process:
 
 ```
-node1 → replicate chunk1 → node3
+node1 -> replicate chunk1 -> node3
 ```
 
 This ensures durability and continued availability.
 
 ---
 
-# Performance Benchmarking (Day 7)
+# Performance Benchmarking 
 
 LumenStore includes a built-in benchmarking system to evaluate:
 
@@ -265,7 +265,7 @@ LumenStore includes a built-in benchmarking system to evaluate:
 ### Parallelism improves throughput
 
 - Increasing worker count significantly improves read performance  
-- Example: RF=1 → 76 MB/s → 184 MB/s  
+- Example: RF=1 -> 76 MB/s -> 184 MB/s  
 
 This demonstrates effective **parallel chunk retrieval**.
 
@@ -274,8 +274,8 @@ This demonstrates effective **parallel chunk retrieval**.
 ### Replication impacts write throughput
 
 - Higher replication factors reduce upload throughput  
-- RF=1 → ~100 MB/s  
-- RF=3 → ~30–50 MB/s  
+- RF=1 -> ~100 MB/s  
+- RF=3 -> ~30–50 MB/s  
 
 This reflects **write amplification** in distributed systems.
 
@@ -392,5 +392,5 @@ Potential improvements:
 - load-aware placement strategies  
 
 ```
-ALPHA DIALLO
+© 2026 - ALPHA DIALLO
 ```
