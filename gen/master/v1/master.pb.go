@@ -606,6 +606,74 @@ func (x *GetObjectPlanResponse) GetChunks() []*ChunkPlacement {
 	return nil
 }
 
+type DebugNode struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	Address       string                 `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	IsAlive       bool                   `protobuf:"varint,3,opt,name=is_alive,json=isAlive,proto3" json:"is_alive,omitempty"`
+	LastSeen      string                 `protobuf:"bytes,4,opt,name=last_seen,json=lastSeen,proto3" json:"last_seen,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DebugNode) Reset() {
+	*x = DebugNode{}
+	mi := &file_proto_master_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DebugNode) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DebugNode) ProtoMessage() {}
+
+func (x *DebugNode) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_master_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DebugNode.ProtoReflect.Descriptor instead.
+func (*DebugNode) Descriptor() ([]byte, []int) {
+	return file_proto_master_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *DebugNode) GetNodeId() string {
+	if x != nil {
+		return x.NodeId
+	}
+	return ""
+}
+
+func (x *DebugNode) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *DebugNode) GetIsAlive() bool {
+	if x != nil {
+		return x.IsAlive
+	}
+	return false
+}
+
+func (x *DebugNode) GetLastSeen() string {
+	if x != nil {
+		return x.LastSeen
+	}
+	return ""
+}
+
 type DebugObject struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
 	ObjectKey         string                 `protobuf:"bytes,1,opt,name=object_key,json=objectKey,proto3" json:"object_key,omitempty"`
@@ -620,7 +688,7 @@ type DebugObject struct {
 
 func (x *DebugObject) Reset() {
 	*x = DebugObject{}
-	mi := &file_proto_master_proto_msgTypes[10]
+	mi := &file_proto_master_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -632,7 +700,7 @@ func (x *DebugObject) String() string {
 func (*DebugObject) ProtoMessage() {}
 
 func (x *DebugObject) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_master_proto_msgTypes[10]
+	mi := &file_proto_master_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -645,7 +713,7 @@ func (x *DebugObject) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DebugObject.ProtoReflect.Descriptor instead.
 func (*DebugObject) Descriptor() ([]byte, []int) {
-	return file_proto_master_proto_rawDescGZIP(), []int{10}
+	return file_proto_master_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *DebugObject) GetObjectKey() string {
@@ -691,16 +759,16 @@ func (x *DebugObject) GetChunks() []*ChunkPlacement {
 }
 
 type DebugStateResponse struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	RegisteredNodes []string               `protobuf:"bytes,1,rep,name=registered_nodes,json=registeredNodes,proto3" json:"registered_nodes,omitempty"`
-	Objects         []*DebugObject         `protobuf:"bytes,2,rep,name=objects,proto3" json:"objects,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Nodes         []*DebugNode           `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	Objects       []*DebugObject         `protobuf:"bytes,2,rep,name=objects,proto3" json:"objects,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DebugStateResponse) Reset() {
 	*x = DebugStateResponse{}
-	mi := &file_proto_master_proto_msgTypes[11]
+	mi := &file_proto_master_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -712,7 +780,7 @@ func (x *DebugStateResponse) String() string {
 func (*DebugStateResponse) ProtoMessage() {}
 
 func (x *DebugStateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_master_proto_msgTypes[11]
+	mi := &file_proto_master_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -725,12 +793,12 @@ func (x *DebugStateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DebugStateResponse.ProtoReflect.Descriptor instead.
 func (*DebugStateResponse) Descriptor() ([]byte, []int) {
-	return file_proto_master_proto_rawDescGZIP(), []int{11}
+	return file_proto_master_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *DebugStateResponse) GetRegisteredNodes() []string {
+func (x *DebugStateResponse) GetNodes() []*DebugNode {
 	if x != nil {
-		return x.RegisteredNodes
+		return x.Nodes
 	}
 	return nil
 }
@@ -793,7 +861,12 @@ const file_proto_master_proto_rawDesc = "" +
 	"\x12replication_factor\x18\x04 \x01(\rR\x11replicationFactor\x12\x1d\n" +
 	"\n" +
 	"num_chunks\x18\x05 \x01(\rR\tnumChunks\x12<\n" +
-	"\x06chunks\x18\x06 \x03(\v2$.lumenstore.master.v1.ChunkPlacementR\x06chunks\"\x81\x02\n" +
+	"\x06chunks\x18\x06 \x03(\v2$.lumenstore.master.v1.ChunkPlacementR\x06chunks\"v\n" +
+	"\tDebugNode\x12\x17\n" +
+	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x18\n" +
+	"\aaddress\x18\x02 \x01(\tR\aaddress\x12\x19\n" +
+	"\bis_alive\x18\x03 \x01(\bR\aisAlive\x12\x1b\n" +
+	"\tlast_seen\x18\x04 \x01(\tR\blastSeen\"\x81\x02\n" +
 	"\vDebugObject\x12\x1d\n" +
 	"\n" +
 	"object_key\x18\x01 \x01(\tR\tobjectKey\x12\x1d\n" +
@@ -803,9 +876,9 @@ const file_proto_master_proto_rawDesc = "" +
 	"\x12replication_factor\x18\x04 \x01(\rR\x11replicationFactor\x12\x1d\n" +
 	"\n" +
 	"num_chunks\x18\x05 \x01(\rR\tnumChunks\x12<\n" +
-	"\x06chunks\x18\x06 \x03(\v2$.lumenstore.master.v1.ChunkPlacementR\x06chunks\"|\n" +
-	"\x12DebugStateResponse\x12)\n" +
-	"\x10registered_nodes\x18\x01 \x03(\tR\x0fregisteredNodes\x12;\n" +
+	"\x06chunks\x18\x06 \x03(\v2$.lumenstore.master.v1.ChunkPlacementR\x06chunks\"\x88\x01\n" +
+	"\x12DebugStateResponse\x125\n" +
+	"\x05nodes\x18\x01 \x03(\v2\x1f.lumenstore.master.v1.DebugNodeR\x05nodes\x12;\n" +
 	"\aobjects\x18\x02 \x03(\v2!.lumenstore.master.v1.DebugObjectR\aobjects2\xfd\x03\n" +
 	"\rMasterService\x12e\n" +
 	"\fRegisterNode\x12).lumenstore.master.v1.RegisterNodeRequest\x1a*.lumenstore.master.v1.RegisterNodeResponse\x12\\\n" +
@@ -827,7 +900,7 @@ func file_proto_master_proto_rawDescGZIP() []byte {
 	return file_proto_master_proto_rawDescData
 }
 
-var file_proto_master_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_proto_master_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_proto_master_proto_goTypes = []any{
 	(*Empty)(nil),                 // 0: lumenstore.master.v1.Empty
 	(*RegisterNodeRequest)(nil),   // 1: lumenstore.master.v1.RegisterNodeRequest
@@ -839,29 +912,31 @@ var file_proto_master_proto_goTypes = []any{
 	(*ChunkPlacement)(nil),        // 7: lumenstore.master.v1.ChunkPlacement
 	(*PutObjectInitResponse)(nil), // 8: lumenstore.master.v1.PutObjectInitResponse
 	(*GetObjectPlanResponse)(nil), // 9: lumenstore.master.v1.GetObjectPlanResponse
-	(*DebugObject)(nil),           // 10: lumenstore.master.v1.DebugObject
-	(*DebugStateResponse)(nil),    // 11: lumenstore.master.v1.DebugStateResponse
+	(*DebugNode)(nil),             // 10: lumenstore.master.v1.DebugNode
+	(*DebugObject)(nil),           // 11: lumenstore.master.v1.DebugObject
+	(*DebugStateResponse)(nil),    // 12: lumenstore.master.v1.DebugStateResponse
 }
 var file_proto_master_proto_depIdxs = []int32{
 	7,  // 0: lumenstore.master.v1.PutObjectInitResponse.chunks:type_name -> lumenstore.master.v1.ChunkPlacement
 	7,  // 1: lumenstore.master.v1.GetObjectPlanResponse.chunks:type_name -> lumenstore.master.v1.ChunkPlacement
 	7,  // 2: lumenstore.master.v1.DebugObject.chunks:type_name -> lumenstore.master.v1.ChunkPlacement
-	10, // 3: lumenstore.master.v1.DebugStateResponse.objects:type_name -> lumenstore.master.v1.DebugObject
-	1,  // 4: lumenstore.master.v1.MasterService.RegisterNode:input_type -> lumenstore.master.v1.RegisterNodeRequest
-	3,  // 5: lumenstore.master.v1.MasterService.Heartbeat:input_type -> lumenstore.master.v1.HeartbeatRequest
-	5,  // 6: lumenstore.master.v1.MasterService.PutObjectInit:input_type -> lumenstore.master.v1.PutObjectInitRequest
-	6,  // 7: lumenstore.master.v1.MasterService.GetObjectPlan:input_type -> lumenstore.master.v1.GetObjectPlanRequest
-	0,  // 8: lumenstore.master.v1.MasterService.DebugState:input_type -> lumenstore.master.v1.Empty
-	2,  // 9: lumenstore.master.v1.MasterService.RegisterNode:output_type -> lumenstore.master.v1.RegisterNodeResponse
-	4,  // 10: lumenstore.master.v1.MasterService.Heartbeat:output_type -> lumenstore.master.v1.HeartbeatResponse
-	8,  // 11: lumenstore.master.v1.MasterService.PutObjectInit:output_type -> lumenstore.master.v1.PutObjectInitResponse
-	9,  // 12: lumenstore.master.v1.MasterService.GetObjectPlan:output_type -> lumenstore.master.v1.GetObjectPlanResponse
-	11, // 13: lumenstore.master.v1.MasterService.DebugState:output_type -> lumenstore.master.v1.DebugStateResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	10, // 3: lumenstore.master.v1.DebugStateResponse.nodes:type_name -> lumenstore.master.v1.DebugNode
+	11, // 4: lumenstore.master.v1.DebugStateResponse.objects:type_name -> lumenstore.master.v1.DebugObject
+	1,  // 5: lumenstore.master.v1.MasterService.RegisterNode:input_type -> lumenstore.master.v1.RegisterNodeRequest
+	3,  // 6: lumenstore.master.v1.MasterService.Heartbeat:input_type -> lumenstore.master.v1.HeartbeatRequest
+	5,  // 7: lumenstore.master.v1.MasterService.PutObjectInit:input_type -> lumenstore.master.v1.PutObjectInitRequest
+	6,  // 8: lumenstore.master.v1.MasterService.GetObjectPlan:input_type -> lumenstore.master.v1.GetObjectPlanRequest
+	0,  // 9: lumenstore.master.v1.MasterService.DebugState:input_type -> lumenstore.master.v1.Empty
+	2,  // 10: lumenstore.master.v1.MasterService.RegisterNode:output_type -> lumenstore.master.v1.RegisterNodeResponse
+	4,  // 11: lumenstore.master.v1.MasterService.Heartbeat:output_type -> lumenstore.master.v1.HeartbeatResponse
+	8,  // 12: lumenstore.master.v1.MasterService.PutObjectInit:output_type -> lumenstore.master.v1.PutObjectInitResponse
+	9,  // 13: lumenstore.master.v1.MasterService.GetObjectPlan:output_type -> lumenstore.master.v1.GetObjectPlanResponse
+	12, // 14: lumenstore.master.v1.MasterService.DebugState:output_type -> lumenstore.master.v1.DebugStateResponse
+	10, // [10:15] is the sub-list for method output_type
+	5,  // [5:10] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_proto_master_proto_init() }
@@ -875,7 +950,7 @@ func file_proto_master_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_master_proto_rawDesc), len(file_proto_master_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

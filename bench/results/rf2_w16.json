@@ -1,0 +1,41 @@
+{
+  "run_id": "run-1774405658",
+  "timestamp": "2026-03-24T22:27:38-04:00",
+  "master_addr": "localhost:50051",
+  "file_path": "bigfile.bin",
+  "object_key": "demo/rf2-w16",
+  "file_size_bytes": 3145728,
+  "chunk_size_bytes": 1048576,
+  "replication_factor": 2,
+  "workers": 16,
+  "upload": {
+    "operation": "upload",
+    "total_chunks": 3,
+    "total_bytes": 3145728,
+    "duration_ms": 49,
+    "throughput_mb_per_sec": 60.27788103155547,
+    "chunk_latency": {
+      "count": 3,
+      "min_ms": 25.172,
+      "p50_ms": 25.172,
+      "p95_ms": 28.8557,
+      "p99_ms": 29.18314,
+      "max_ms": 29.265
+    }
+  },
+  "download": {
+    "operation": "download",
+    "total_chunks": 3,
+    "total_bytes": 3145728,
+    "duration_ms": 19,
+    "throughput_mb_per_sec": 155.35669898086007,
+    "chunk_latency": {
+      "count": 3,
+      "min_ms": 12.717,
+      "p50_ms": 12.717,
+      "p95_ms": 13.2048,
+      "p99_ms": 13.24816,
+      "max_ms": 13.259
+    }
+  }
+}

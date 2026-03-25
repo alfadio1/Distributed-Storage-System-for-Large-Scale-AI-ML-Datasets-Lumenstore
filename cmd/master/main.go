@@ -12,16 +12,27 @@ import (
 
 func main() {
 	addr := ":50051"
+
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("master listen error: %v", err)
 	}
 
-	s := grpc.NewServer()
-	masterv1.RegisterMasterServiceServer(s, master.NewServer())
+	grpcServer := grpc.NewServer()
+
+	// Create master server instance
+	masterServer := master.NewServer()
+
+	// Start heartbeat monitoring loop
+	masterServer.StartHeartbeatMonitor()
+	masterServer.StartHealer()
+
+	// Register service
+	masterv1.RegisterMasterServiceServer(grpcServer, masterServer)
 
 	log.Printf("master listening on %s", addr)
-	if err := s.Serve(lis); err != nil {
+
+	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("master serve error: %v", err)
 	}
 }

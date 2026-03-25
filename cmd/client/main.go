@@ -22,6 +22,8 @@ func main() {
 		runPut(os.Args[2:])
 	case "get":
 		runGet(os.Args[2:])
+	case "bench":
+		runBench(os.Args[2:])
 	default:
 		log.Fatalf("unknown command: %s", os.Args[1])
 	}
@@ -83,4 +85,40 @@ func runGet(args []string) {
 	}
 
 	fmt.Printf("get succeeded: object=%s out=%s\n", *objectKey, *outPath)
+}
+
+func runBench(args []string) {
+	fs := flag.NewFlagSet("bench", flag.ExitOnError)
+
+	masterAddr := fs.String("master", "localhost:50051", "master address")
+	filePath := fs.String("file", "", "local file path")
+	objectKey := fs.String("object", "", "object key")
+	chunkMB := fs.Uint64("chunk-mb", 1, "chunk size in MB")
+	rf := fs.Uint("rf", 1, "replication factor")
+	workers := fs.Int("workers", 4, "number of parallel workers")
+	out := fs.String("out", "bench/results/result.json", "output file")
+
+	fs.Parse(args)
+
+	if *filePath == "" {
+		log.Fatal("--file is required")
+	}
+	if *objectKey == "" {
+		log.Fatal("--object is required")
+	}
+
+	chunkSizeBytes := (*chunkMB) * 1024 * 1024
+
+	err := client.RunBenchmark(
+		*masterAddr,
+		*filePath,
+		*objectKey,
+		chunkSizeBytes,
+		uint32(*rf),
+		*workers,
+		*out,
+	)
+	if err != nil {
+		log.Fatalf("benchmark failed: %v", err)
+	}
 }

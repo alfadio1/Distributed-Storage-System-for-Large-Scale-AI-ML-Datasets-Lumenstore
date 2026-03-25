@@ -66,6 +66,13 @@ message GetObjectPlanResponse {
 
 // --- Debug state inspection ---
 
+message DebugNode {
+  string node_id = 1;
+  string address = 2;
+  bool is_alive = 3;
+  string last_seen = 4;
+}
+
 message DebugObject {
   string object_key = 1;
   uint64 size_bytes = 2;
@@ -76,7 +83,7 @@ message DebugObject {
 }
 
 message DebugStateResponse {
-  repeated string registered_nodes = 1;
+  repeated DebugNode nodes = 1;
   repeated DebugObject objects = 2;
 }
 

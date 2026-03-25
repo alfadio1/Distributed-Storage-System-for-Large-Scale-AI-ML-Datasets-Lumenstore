@@ -325,6 +325,102 @@ func (x *GetChunkResponse) GetBytesRead() uint64 {
 	return 0
 }
 
+type ReplicateChunkRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ChunkId       string                 `protobuf:"bytes,1,opt,name=chunk_id,json=chunkId,proto3" json:"chunk_id,omitempty"`
+	TargetAddress string                 `protobuf:"bytes,2,opt,name=target_address,json=targetAddress,proto3" json:"target_address,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReplicateChunkRequest) Reset() {
+	*x = ReplicateChunkRequest{}
+	mi := &file_proto_node_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReplicateChunkRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReplicateChunkRequest) ProtoMessage() {}
+
+func (x *ReplicateChunkRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_node_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReplicateChunkRequest.ProtoReflect.Descriptor instead.
+func (*ReplicateChunkRequest) Descriptor() ([]byte, []int) {
+	return file_proto_node_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ReplicateChunkRequest) GetChunkId() string {
+	if x != nil {
+		return x.ChunkId
+	}
+	return ""
+}
+
+func (x *ReplicateChunkRequest) GetTargetAddress() string {
+	if x != nil {
+		return x.TargetAddress
+	}
+	return ""
+}
+
+type ReplicateChunkResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Ok            bool                   `protobuf:"varint,1,opt,name=ok,proto3" json:"ok,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReplicateChunkResponse) Reset() {
+	*x = ReplicateChunkResponse{}
+	mi := &file_proto_node_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReplicateChunkResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReplicateChunkResponse) ProtoMessage() {}
+
+func (x *ReplicateChunkResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_node_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReplicateChunkResponse.ProtoReflect.Descriptor instead.
+func (*ReplicateChunkResponse) Descriptor() ([]byte, []int) {
+	return file_proto_node_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ReplicateChunkResponse) GetOk() bool {
+	if x != nil {
+		return x.Ok
+	}
+	return false
+}
+
 var File_proto_node_proto protoreflect.FileDescriptor
 
 const file_proto_node_proto_rawDesc = "" +
@@ -347,11 +443,17 @@ const file_proto_node_proto_rawDesc = "" +
 	"\x04data\x18\x01 \x01(\fR\x04data\x12\x14\n" +
 	"\x05crc32\x18\x02 \x01(\rR\x05crc32\x12\x1d\n" +
 	"\n" +
-	"bytes_read\x18\x03 \x01(\x04R\tbytesRead2\x8c\x02\n" +
+	"bytes_read\x18\x03 \x01(\x04R\tbytesRead\"Y\n" +
+	"\x15ReplicateChunkRequest\x12\x19\n" +
+	"\bchunk_id\x18\x01 \x01(\tR\achunkId\x12%\n" +
+	"\x0etarget_address\x18\x02 \x01(\tR\rtargetAddress\"(\n" +
+	"\x16ReplicateChunkResponse\x12\x0e\n" +
+	"\x02ok\x18\x01 \x01(\bR\x02ok2\xf5\x02\n" +
 	"\vNodeService\x12O\n" +
 	"\x06Health\x12!.lumenstore.node.v1.HealthRequest\x1a\".lumenstore.node.v1.HealthResponse\x12U\n" +
 	"\bPutChunk\x12#.lumenstore.node.v1.PutChunkRequest\x1a$.lumenstore.node.v1.PutChunkResponse\x12U\n" +
-	"\bGetChunk\x12#.lumenstore.node.v1.GetChunkRequest\x1a$.lumenstore.node.v1.GetChunkResponseB0Z.github.com/alpha/lumenstore/gen/node/v1;nodev1b\x06proto3"
+	"\bGetChunk\x12#.lumenstore.node.v1.GetChunkRequest\x1a$.lumenstore.node.v1.GetChunkResponse\x12g\n" +
+	"\x0eReplicateChunk\x12).lumenstore.node.v1.ReplicateChunkRequest\x1a*.lumenstore.node.v1.ReplicateChunkResponseB0Z.github.com/alpha/lumenstore/gen/node/v1;nodev1b\x06proto3"
 
 var (
 	file_proto_node_proto_rawDescOnce sync.Once
@@ -365,24 +467,28 @@ func file_proto_node_proto_rawDescGZIP() []byte {
 	return file_proto_node_proto_rawDescData
 }
 
-var file_proto_node_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_proto_node_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_proto_node_proto_goTypes = []any{
-	(*HealthRequest)(nil),    // 0: lumenstore.node.v1.HealthRequest
-	(*HealthResponse)(nil),   // 1: lumenstore.node.v1.HealthResponse
-	(*PutChunkRequest)(nil),  // 2: lumenstore.node.v1.PutChunkRequest
-	(*PutChunkResponse)(nil), // 3: lumenstore.node.v1.PutChunkResponse
-	(*GetChunkRequest)(nil),  // 4: lumenstore.node.v1.GetChunkRequest
-	(*GetChunkResponse)(nil), // 5: lumenstore.node.v1.GetChunkResponse
+	(*HealthRequest)(nil),          // 0: lumenstore.node.v1.HealthRequest
+	(*HealthResponse)(nil),         // 1: lumenstore.node.v1.HealthResponse
+	(*PutChunkRequest)(nil),        // 2: lumenstore.node.v1.PutChunkRequest
+	(*PutChunkResponse)(nil),       // 3: lumenstore.node.v1.PutChunkResponse
+	(*GetChunkRequest)(nil),        // 4: lumenstore.node.v1.GetChunkRequest
+	(*GetChunkResponse)(nil),       // 5: lumenstore.node.v1.GetChunkResponse
+	(*ReplicateChunkRequest)(nil),  // 6: lumenstore.node.v1.ReplicateChunkRequest
+	(*ReplicateChunkResponse)(nil), // 7: lumenstore.node.v1.ReplicateChunkResponse
 }
 var file_proto_node_proto_depIdxs = []int32{
 	0, // 0: lumenstore.node.v1.NodeService.Health:input_type -> lumenstore.node.v1.HealthRequest
 	2, // 1: lumenstore.node.v1.NodeService.PutChunk:input_type -> lumenstore.node.v1.PutChunkRequest
 	4, // 2: lumenstore.node.v1.NodeService.GetChunk:input_type -> lumenstore.node.v1.GetChunkRequest
-	1, // 3: lumenstore.node.v1.NodeService.Health:output_type -> lumenstore.node.v1.HealthResponse
-	3, // 4: lumenstore.node.v1.NodeService.PutChunk:output_type -> lumenstore.node.v1.PutChunkResponse
-	5, // 5: lumenstore.node.v1.NodeService.GetChunk:output_type -> lumenstore.node.v1.GetChunkResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	6, // 3: lumenstore.node.v1.NodeService.ReplicateChunk:input_type -> lumenstore.node.v1.ReplicateChunkRequest
+	1, // 4: lumenstore.node.v1.NodeService.Health:output_type -> lumenstore.node.v1.HealthResponse
+	3, // 5: lumenstore.node.v1.NodeService.PutChunk:output_type -> lumenstore.node.v1.PutChunkResponse
+	5, // 6: lumenstore.node.v1.NodeService.GetChunk:output_type -> lumenstore.node.v1.GetChunkResponse
+	7, // 7: lumenstore.node.v1.NodeService.ReplicateChunk:output_type -> lumenstore.node.v1.ReplicateChunkResponse
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -399,7 +505,7 @@ func file_proto_node_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_node_proto_rawDesc), len(file_proto_node_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

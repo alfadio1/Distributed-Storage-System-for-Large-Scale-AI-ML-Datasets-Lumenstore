@@ -33,10 +33,21 @@ message GetChunkResponse {
   uint64 bytes_read = 3;
 }
 
+message ReplicateChunkRequest {
+  string chunk_id = 1;
+  string target_address = 2;
+}
+
+message ReplicateChunkResponse {
+  bool ok = 1;
+}
+
 service NodeService {
   rpc Health(HealthRequest) returns (HealthResponse);
 
   // 
   rpc PutChunk(PutChunkRequest) returns (PutChunkResponse);
   rpc GetChunk(GetChunkRequest) returns (GetChunkResponse);
+
+  rpc ReplicateChunk(ReplicateChunkRequest) returns (ReplicateChunkResponse);
 }

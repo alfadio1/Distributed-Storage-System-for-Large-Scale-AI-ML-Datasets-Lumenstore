@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	NodeService_Health_FullMethodName   = "/lumenstore.node.v1.NodeService/Health"
-	NodeService_PutChunk_FullMethodName = "/lumenstore.node.v1.NodeService/PutChunk"
-	NodeService_GetChunk_FullMethodName = "/lumenstore.node.v1.NodeService/GetChunk"
+	NodeService_Health_FullMethodName         = "/lumenstore.node.v1.NodeService/Health"
+	NodeService_PutChunk_FullMethodName       = "/lumenstore.node.v1.NodeService/PutChunk"
+	NodeService_GetChunk_FullMethodName       = "/lumenstore.node.v1.NodeService/GetChunk"
+	NodeService_ReplicateChunk_FullMethodName = "/lumenstore.node.v1.NodeService/ReplicateChunk"
 )
 
 // NodeServiceClient is the client API for NodeService service.
@@ -31,6 +32,7 @@ type NodeServiceClient interface {
 	Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error)
 	PutChunk(ctx context.Context, in *PutChunkRequest, opts ...grpc.CallOption) (*PutChunkResponse, error)
 	GetChunk(ctx context.Context, in *GetChunkRequest, opts ...grpc.CallOption) (*GetChunkResponse, error)
+	ReplicateChunk(ctx context.Context, in *ReplicateChunkRequest, opts ...grpc.CallOption) (*ReplicateChunkResponse, error)
 }
 
 type nodeServiceClient struct {
@@ -71,6 +73,16 @@ func (c *nodeServiceClient) GetChunk(ctx context.Context, in *GetChunkRequest, o
 	return out, nil
 }
 
+func (c *nodeServiceClient) ReplicateChunk(ctx context.Context, in *ReplicateChunkRequest, opts ...grpc.CallOption) (*ReplicateChunkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReplicateChunkResponse)
+	err := c.cc.Invoke(ctx, NodeService_ReplicateChunk_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NodeServiceServer is the server API for NodeService service.
 // All implementations must embed UnimplementedNodeServiceServer
 // for forward compatibility.
@@ -78,6 +90,7 @@ type NodeServiceServer interface {
 	Health(context.Context, *HealthRequest) (*HealthResponse, error)
 	PutChunk(context.Context, *PutChunkRequest) (*PutChunkResponse, error)
 	GetChunk(context.Context, *GetChunkRequest) (*GetChunkResponse, error)
+	ReplicateChunk(context.Context, *ReplicateChunkRequest) (*ReplicateChunkResponse, error)
 	mustEmbedUnimplementedNodeServiceServer()
 }
 
@@ -96,6 +109,9 @@ func (UnimplementedNodeServiceServer) PutChunk(context.Context, *PutChunkRequest
 }
 func (UnimplementedNodeServiceServer) GetChunk(context.Context, *GetChunkRequest) (*GetChunkResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetChunk not implemented")
+}
+func (UnimplementedNodeServiceServer) ReplicateChunk(context.Context, *ReplicateChunkRequest) (*ReplicateChunkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ReplicateChunk not implemented")
 }
 func (UnimplementedNodeServiceServer) mustEmbedUnimplementedNodeServiceServer() {}
 func (UnimplementedNodeServiceServer) testEmbeddedByValue()                     {}
@@ -172,6 +188,24 @@ func _NodeService_GetChunk_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _NodeService_ReplicateChunk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReplicateChunkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NodeServiceServer).ReplicateChunk(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NodeService_ReplicateChunk_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NodeServiceServer).ReplicateChunk(ctx, req.(*ReplicateChunkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // NodeService_ServiceDesc is the grpc.ServiceDesc for NodeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -190,6 +224,10 @@ var NodeService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetChunk",
 			Handler:    _NodeService_GetChunk_Handler,
+		},
+		{
+			MethodName: "ReplicateChunk",
+			Handler:    _NodeService_ReplicateChunk_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

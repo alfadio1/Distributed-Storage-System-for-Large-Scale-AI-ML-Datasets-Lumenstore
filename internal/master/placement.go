@@ -6,7 +6,7 @@ import (
 )
 
 // sortedNodeIDs returns registered node IDs in deterministic sorted order.
-func sortedNodeIDs(nodes map[string]string) []string {
+func sortedNodeIDs(nodes map[string]NodeMeta) []string {
 	ids := make([]string, 0, len(nodes))
 	for id := range nodes {
 		ids = append(ids, id)

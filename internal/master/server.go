@@ -28,8 +28,14 @@ func (s *Server) RegisterNode(ctx context.Context, req *masterv1.RegisterNodeReq
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.state.Nodes[req.NodeId] = req.Address
-	s.state.LastSeen[req.NodeId] = time.Now()
+	// s.state.Nodes[req.NodeId] = req.Address
+	// s.state.LastSeen[req.NodeId] = time.Now()
+	s.state.Nodes[req.NodeId] = NodeMeta{
+		NodeID:   req.NodeId,
+		Address:  req.Address,
+		LastSeen: time.Now(),
+		IsAlive:  true,
+	}
 
 	log.Printf("[master] registered node=%s addr=%s", req.NodeId, req.Address)
 	return &masterv1.RegisterNodeResponse{Ok: true}, nil
@@ -39,7 +45,15 @@ func (s *Server) Heartbeat(ctx context.Context, req *masterv1.HeartbeatRequest) 
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.state.LastSeen[req.NodeId] = time.Now()
+	node, ok := s.state.Nodes[req.NodeId]
+	if !ok {
+		return nil, fmt.Errorf("heartbeat from unregistered node: %s", req.NodeId)
+	}
+
+	node.LastSeen = time.Now()
+	node.IsAlive = true
+	s.state.Nodes[req.NodeId] = node
+	// s.state.LastSeen[req.NodeId] = time.Now()
 	log.Printf("[master] heartbeat node=%s", req.NodeId)
 
 	return &masterv1.HeartbeatResponse{Ok: true}, nil
@@ -68,7 +82,7 @@ func (s *Server) PutObjectInit(ctx context.Context, req *masterv1.PutObjectInitR
 	for _, ch := range objectMeta.Chunks {
 		replicaAddresses := make([]string, 0, len(ch.ReplicaNodes))
 		for _, replicaNodeID := range ch.ReplicaNodes {
-			replicaAddresses = append(replicaAddresses, s.state.Nodes[replicaNodeID])
+			replicaAddresses = append(replicaAddresses, s.state.Nodes[replicaNodeID].Address)
 		}
 
 		respChunks = append(respChunks, &masterv1.ChunkPlacement{
@@ -76,7 +90,7 @@ func (s *Server) PutObjectInit(ctx context.Context, req *masterv1.PutObjectInitR
 			Index:            ch.Index,
 			PrimaryNode:      ch.PrimaryNode,
 			ReplicaNodes:     ch.ReplicaNodes,
-			PrimaryAddress:   s.state.Nodes[ch.PrimaryNode],
+			PrimaryAddress:   s.state.Nodes[ch.PrimaryNode].Address,
 			ReplicaAddresses: replicaAddresses,
 		})
 	}
@@ -112,7 +126,7 @@ func (s *Server) GetObjectPlan(ctx context.Context, req *masterv1.GetObjectPlanR
 	for _, ch := range obj.Chunks {
 		replicaAddresses := make([]string, 0, len(ch.ReplicaNodes))
 		for _, replicaNodeID := range ch.ReplicaNodes {
-			replicaAddresses = append(replicaAddresses, s.state.Nodes[replicaNodeID])
+			replicaAddresses = append(replicaAddresses, s.state.Nodes[replicaNodeID].Address)
 		}
 
 		respChunks = append(respChunks, &masterv1.ChunkPlacement{
@@ -120,7 +134,7 @@ func (s *Server) GetObjectPlan(ctx context.Context, req *masterv1.GetObjectPlanR
 			Index:            ch.Index,
 			PrimaryNode:      ch.PrimaryNode,
 			ReplicaNodes:     ch.ReplicaNodes,
-			PrimaryAddress:   s.state.Nodes[ch.PrimaryNode],
+			PrimaryAddress:   s.state.Nodes[ch.PrimaryNode].Address,
 			ReplicaAddresses: replicaAddresses,
 		})
 	}
@@ -144,7 +158,19 @@ func (s *Server) DebugState(ctx context.Context, req *masterv1.Empty) (*masterv1
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	registeredNodes := sortedNodeIDs(s.state.Nodes)
+	// registeredNodes := sortedNodeIDs(s.state.Nodes)
+	nodeIDs := sortedNodeIDs(s.state.Nodes)
+
+	debugNodes := make([]*masterv1.DebugNode, 0, len(nodeIDs))
+	for _, nodeID := range nodeIDs {
+		node := s.state.Nodes[nodeID]
+		debugNodes = append(debugNodes, &masterv1.DebugNode{
+			NodeId:   node.NodeID,
+			Address:  node.Address,
+			IsAlive:  node.IsAlive,
+			LastSeen: node.LastSeen.Format(time.RFC3339),
+		})
+	}
 
 	objectKeys := make([]string, 0, len(s.state.Objects))
 	for objectKey := range s.state.Objects {
@@ -160,7 +186,7 @@ func (s *Server) DebugState(ctx context.Context, req *masterv1.Empty) (*masterv1
 		for _, ch := range obj.Chunks {
 			replicaAddresses := make([]string, 0, len(ch.ReplicaNodes))
 			for _, replicaNodeID := range ch.ReplicaNodes {
-				replicaAddresses = append(replicaAddresses, s.state.Nodes[replicaNodeID])
+				replicaAddresses = append(replicaAddresses, s.state.Nodes[replicaNodeID].Address)
 			}
 
 			chunks = append(chunks, &masterv1.ChunkPlacement{
@@ -168,7 +194,7 @@ func (s *Server) DebugState(ctx context.Context, req *masterv1.Empty) (*masterv1
 				Index:            ch.Index,
 				PrimaryNode:      ch.PrimaryNode,
 				ReplicaNodes:     ch.ReplicaNodes,
-				PrimaryAddress:   s.state.Nodes[ch.PrimaryNode],
+				PrimaryAddress:   s.state.Nodes[ch.PrimaryNode].Address,
 				ReplicaAddresses: replicaAddresses,
 			})
 		}
@@ -182,9 +208,13 @@ func (s *Server) DebugState(ctx context.Context, req *masterv1.Empty) (*masterv1
 			Chunks:            chunks,
 		})
 	}
-
 	return &masterv1.DebugStateResponse{
-		RegisteredNodes: registeredNodes,
-		Objects:         objects,
+		Nodes:   debugNodes,
+		Objects: objects,
 	}, nil
+
+	// return &masterv1.DebugStateResponse{
+	// 	RegisteredNodes: registeredNodes,
+	// 	Objects:         objects,
+	// }, nil
 }

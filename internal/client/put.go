@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"sync"
+	"time"
 )
 
 func PutFile(
@@ -67,10 +68,36 @@ func PutFile(
 					continue
 				}
 
+				// Currently only uplading to primary node
+
+				// if err := UploadChunk(task.chunkPlan.PrimaryAddress, task.chunk); err != nil {
+				// 	errCh <- fmt.Errorf("upload failed for chunk %s: %w", task.chunk.ChunkID, err)
+				// 	continue
+				// }
+
+				//  Upload to primary first
 				if err := UploadChunk(task.chunkPlan.PrimaryAddress, task.chunk); err != nil {
-					errCh <- fmt.Errorf("upload failed for chunk %s: %w", task.chunk.ChunkID, err)
+					errCh <- fmt.Errorf("primary upload failed for chunk %s: %w", task.chunk.ChunkID, err)
 					continue
 				}
+
+				// then Upload to replicas
+				for _, replicaAddr := range task.chunkPlan.ReplicaAddresses {
+					// skip if replica == primary (just in case)
+					if replicaAddr == task.chunkPlan.PrimaryAddress {
+						continue
+					}
+
+					if err := UploadChunk(replicaAddr, task.chunk); err != nil {
+						errCh <- fmt.Errorf("replica upload failed for chunk %s to %s: %w",
+							task.chunk.ChunkID,
+							replicaAddr,
+							err,
+						)
+						continue
+					}
+				}
+				//
 			}
 		}()
 	}
@@ -93,4 +120,126 @@ func PutFile(
 	}
 
 	return nil
+}
+
+func putFileWithMetrics(
+	masterAddr string,
+	filePath string,
+	objectKey string,
+	chunkSizeBytes uint64,
+	replicationFactor uint32,
+	workerCount int,
+) (OperationMetrics, error) {
+
+	startTime := time.Now()
+
+	fileInfo, err := getFileInfo(filePath)
+	if err != nil {
+		return OperationMetrics{}, err
+	}
+
+	plan, err := RequestPutObjectPlan(
+		masterAddr,
+		objectKey,
+		uint64(fileInfo.Size()),
+		chunkSizeBytes,
+		replicationFactor,
+	)
+	if err != nil {
+		return OperationMetrics{}, err
+	}
+
+	localChunks, err := BuildLocalChunks(filePath, plan)
+	if err != nil {
+		return OperationMetrics{}, err
+	}
+
+	type uploadTask struct {
+		chunk     LocalChunk
+		chunkPlan ChunkPlan
+	}
+
+	tasks := make(chan uploadTask, len(localChunks))
+	errCh := make(chan error, len(localChunks))
+
+	// collect latency per chunk
+	latencyCh := make(chan time.Duration, len(localChunks))
+
+	var wg sync.WaitGroup
+
+	for w := 0; w < workerCount; w++ {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+
+			for task := range tasks {
+
+				chunkStart := time.Now()
+
+				// uploading to primary
+				if err := UploadChunk(task.chunkPlan.PrimaryAddress, task.chunk); err != nil {
+					errCh <- fmt.Errorf("primary upload failed for chunk %s: %w", task.chunk.ChunkID, err)
+					continue
+				}
+
+				// uploading to replicas
+				for _, replicaAddr := range task.chunkPlan.ReplicaAddresses {
+					if replicaAddr == task.chunkPlan.PrimaryAddress {
+						continue
+					}
+
+					if err := UploadChunk(replicaAddr, task.chunk); err != nil {
+						errCh <- fmt.Errorf("replica upload failed for chunk %s to %s: %w",
+							task.chunk.ChunkID,
+							replicaAddr,
+							err,
+						)
+						continue
+					}
+				}
+
+				chunkDuration := time.Since(chunkStart)
+				latencyCh <- chunkDuration
+			}
+		}()
+	}
+
+	for i := range localChunks {
+		tasks <- uploadTask{
+			chunk:     localChunks[i],
+			chunkPlan: plan.Chunks[i],
+		}
+	}
+	close(tasks)
+
+	wg.Wait()
+	close(errCh)
+	close(latencyCh)
+
+	for err := range errCh {
+		if err != nil {
+			return OperationMetrics{}, err
+		}
+	}
+
+	// collect latencies
+	var durations []time.Duration
+	for d := range latencyCh {
+		durations = append(durations, d)
+	}
+
+	totalDuration := time.Since(startTime)
+	totalBytes := uint64(fileInfo.Size())
+
+	throughput := float64(totalBytes) / (1024 * 1024) / totalDuration.Seconds()
+
+	return OperationMetrics{
+		Operation:          "upload",
+		TotalChunks:        len(localChunks),
+		TotalBytes:         totalBytes,
+		DurationMs:         float64(totalDuration.Milliseconds()),
+		ThroughputMBPerSec: throughput,
+		ChunkLatency:       buildLatencySummary(durations),
+	}, nil
 }

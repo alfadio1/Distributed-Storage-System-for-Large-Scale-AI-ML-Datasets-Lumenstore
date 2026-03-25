@@ -20,17 +20,23 @@ type ChunkMeta struct {
 	ReplicaNodes []string
 }
 
+// NodeMeta represents one registered storage node.
+type NodeMeta struct {
+	NodeID   string
+	Address  string
+	LastSeen time.Time
+	IsAlive  bool
+}
+
 // State is the master's in-memory metadata state.
 type State struct {
-	Nodes    map[string]string    // nodeID -> address
-	LastSeen map[string]time.Time // nodeID -> last heartbeat
-	Objects  map[string]ObjectMeta
+	Nodes   map[string]NodeMeta // nodeID -> node metadata
+	Objects map[string]ObjectMeta
 }
 
 func NewState() *State {
 	return &State{
-		Nodes:    make(map[string]string),
-		LastSeen: make(map[string]time.Time),
-		Objects:  make(map[string]ObjectMeta),
+		Nodes:   make(map[string]NodeMeta),
+		Objects: make(map[string]ObjectMeta),
 	}
 }
